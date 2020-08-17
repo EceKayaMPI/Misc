@@ -9,7 +9,7 @@ vti = 100;
 % Nseq = 100;
 NI = 31;
 
-alphas = -1:0.1:1;
+alphas = 0.1:0.01:2;
 betas = [0, .1, .2, -.1, -.2];
 
 %% Figure 1
@@ -35,7 +35,6 @@ for exp = 1:100
         n = 1;
         I(n) = T(n) + M(n+1) - M(n); % no asynchrony at first ITI ? ((Molly selected I(1) = M(1)))
         A(n) = I(n) - metronome;
-        
         % second-to-last taps ------------------------------
         for n = 2:30
             A(n) = I(n-1) - metronome;
@@ -60,7 +59,7 @@ MUvarAn = mean(MUvarAn,2); % if A is a matrix, then mean(A,2) is a column vector
 
 % subplot(2,3,1);
 EK_quickplot(alphas,MUvarAn,'alpha','var(An)','mean from 100 exp');%hold on;
-set(gca, 'YLim', [0 1400]); set(gca, 'XLim', [min(alphas) max(alphas)]);
+set(gca, 'YLim', [0 1400]); set(gca, 'XLim', [0 2]);
 
 
 % subplot(2,3,2)
