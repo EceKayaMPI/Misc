@@ -38,11 +38,13 @@ for exp = 1:100
             I = [];
             for n = 1:30
                 if n == 1
-                    A(n) = gamrnd(k,sqrt(vm/k),[1 1]);
+%                     A(n) = gamrnd(k,sqrt(vm/k),[1 1]);
+                    A(n) = -metronome;
                     Tx(n) = T(n) -  alpha * A(n);
                     I(n) = Tx(n) + M(n+1) - M(n);
                 else
-                    A(n) = metronome - A(n-1) - I(n-1);
+%                     A(n) = metronome - A(n-1) - I(n-1);
+                    A(n) = sum(I(1:n-1)) - metronome*(n-1);
                     Tx(n) = T(n)  - alpha * A(n) - beta * A(n-1);
                     I(n) = Tx(n) + M(n+1) - M(n);
                 end
