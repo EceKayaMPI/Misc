@@ -28,7 +28,7 @@ for exp = 1:100
             for n = 1:30
                 if n == 1
 %                     A(n) = gamrnd(k,sqrt(vm/k),[1 1]);
-                    A(n) = -metronome;
+                    A(n) = 0;
                     Tx(n) = T(n) -  alpha * A(n);
                     I(n) = Tx(n) + M(n+1) - M(n);
                 else
@@ -70,11 +70,11 @@ for b = 1:length(betas)
     
     subplot(2,3,2)
     EK_quickplot(params.alpha, mu_ACorr1(b,:),'alpha','p(An,An+1)',[]);hold on;
-    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  
+    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  yline(0);
     
     subplot(2,3,3)
     EK_quickplot(params.alpha, mu_ACorr2(b,:),'alpha','p(An,An+2)',[]);hold on;
-    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  
+    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  yline(0);
     
     subplot(2,3,4)
     EK_quickplot(params.alpha, mu_varIn(b,:),'alpha','var(In)',[]);hold on;
@@ -82,11 +82,11 @@ for b = 1:length(betas)
     
     subplot(2,3,5)
     EK_quickplot(params.alpha, mu_ICorr1(b,:),'alpha','p(In,In+1)',[]);hold on;
-    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  
+    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  yline(0);
     
     subplot(2,3,6)
-    EK_quickplot(params.alpha, mu_ICorr1(b,:),'alpha','p(In,In+2)',[]);hold on;
-    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  
+    EK_quickplot(params.alpha, mu_ICorr2(b,:),'alpha','p(In,In+2)',[]);hold on;
+    set(gca, 'YLim', [-1 1]); set(gca, 'XLim', [0 2]);  yline(0);
     
     
 end
