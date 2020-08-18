@@ -6,10 +6,21 @@ k = 4;
 vm = 25;
 vti = 100;
 
+% Nseq = 100;
 NI = 31;
 
 alphas = 0.2:0.1:1.8;
 betas = [0, .1, .2, -.1, -.2];
+
+%% Figure 1
+
+% MUvarAn = [];
+
+% MU = struct();
+
+% for exp = 1:100
+
+
 
 params = struct();
 
@@ -17,7 +28,7 @@ for exp = 1:100
     
     M = gamrnd(k,sqrt(vm/k),[NI 1]);
     T = gamrnd(k,sqrt(vti/k),[NI-1 1]);
-    metronome = mean(T); 
+    metronome = mean(T); % Molly selected mean(gamma) in general which is ~ 14. ??
 
     for b = 1:length(betas)
         beta = betas(b);
