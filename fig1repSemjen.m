@@ -8,7 +8,7 @@ vti = 100;
 
 NI = 31;
 
-alphas = 0.2:0.1:1.8;
+alphas = 0:0.05:1.8;
 betas = [0, .1, .2, -.1, -.2];
 
 params = struct();
@@ -27,8 +27,7 @@ for exp = 1:100
             I = [];
             for n = 1:30
                 if n == 1
-%                     A(n) = gamrnd(k,sqrt(vm/k),[1 1]);
-                    A(n) = 0;
+                    A(n) = gamrnd(k,sqrt(vm/k),[1 1]); % some motor delay
                     Tx(n) = T(n) -  alpha * A(n);
                     I(n) = Tx(n) + M(n+1) - M(n);
                 else
