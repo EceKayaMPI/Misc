@@ -8,12 +8,17 @@
 % [pval,fval] = fminsearch(@(params) sumsq_ACVF_diff(params(1),params(2),params(3),params(4)),[25, 100, 0.3, 0.3]);
 [acvf_diff] = sumsq_ACVF_diff (25,100,0.4,0.3,ACVF_goal );
 %% function to minimize
-function [acvf_diff] = sumsq_ACVF_diff (m,t,alpha,beta, ACVF_goal)
+
+function [estim_params, discrepancy] = fminsearcher (ACVF_goal)
+
+function [acvf_diff] = sumsq_ACVF_diff (m,t,alpha,beta)
 [test_I] = simulate_sync (m,t,alpha,beta);
 [test_ACVF] = calculate_ACVF(test_I);
 % squared deviations between the two acvf arrays (summed sq deviations)
 difference = ACVF_goal - test_ACVF;
 acvf_diff = sum(difference(:).^2);
+end
+
 end
 %% the function that simulates data only (out = I, in = m,t,alpha,beta)
 function [I] = simulate_sync (m,t,alpha,beta)
