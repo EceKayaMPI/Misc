@@ -31,7 +31,7 @@ function [x, fval] = wrapper4fmin (start_params, real_ACVF)
     end
 end
 
-function I_avg = model(params, nSeq)
+function A_avg = model(params, nSeq)
 m = params(1);
 t = params(2);
 alpha = params(3);
@@ -58,15 +58,15 @@ metronome = mean(T);
     end % n, taps
     I = I'; A = A';
 
-all_seqs(experiment, :) = I;
+all_seqs(experiment, :) = A;
 end % experiment simulation
-I_avg = mean(all_seqs,1);
+A_avg = mean(all_seqs,1);
 end % sim function 
 
-function ACVF = calculate_ACVF(I)
+function ACVF = calculate_ACVF(arr)
 ACVF = [];
 for lag = 0:3
-    covmat = cov(I(1:end-lag),I(1+lag:end));
+    covmat = cov(arr(1:end-lag),arr(1+lag:end));
     ACVF(lag+1) = covmat(1,2);
 end
 end
