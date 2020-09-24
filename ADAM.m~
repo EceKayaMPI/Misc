@@ -11,7 +11,7 @@ beta =0.1;
 m =0.5;                 % 0 = track | 1 = predict 
 gamma_init =0.5;        % 0 = anticipate | 1 = adapt 
 
-mvarProp = .5;          % 0 = motor flexible | 1 = motor unflexible 
+mvarProp = .5;          % 0 = motor flex | 1 = adapt 
 
 T = zeros(1,N);         % timekeeper (interval)
 t = zeros(1,N);         % ADAM's tap (timestamp)
