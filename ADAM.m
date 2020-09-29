@@ -1,7 +1,7 @@
 clear,clc;
 
 N = 34;
-stim_IOIs = linspace(600,100,N);
+stim_IOIs = linspace(1600,100,N);
 stim = [0 cumsum(stim_IOIs)];
 
 limits = [250, 1000];
@@ -9,7 +9,7 @@ limits = [250, 1000];
 alpha =0.4;
 beta =0.1;
 m =0.5;                 % 0 = track | 1 = predict 
-gamma_init =0.5;        % 0 = anticipate | 1 = adapt 
+gamma_init =0.2;        % 0 = anticipate | 1 = adapt 
 
 mvarProp = .5;          % 0 = motor flexible | 1 = motor unflexible 
 
@@ -28,6 +28,7 @@ M_init = M;
 
 T(2:3) = stim_IOIs(1:2) + TK1(1:2);  % initialize timekeeper with first 2 stims
 
+
 for n = 2:N
     gamma = gamma_init;
 
@@ -45,25 +46,19 @@ for n = 2:N
 
         t_pred(n+1) = t(n) + (m * IOI_pred(n+1) + (1-m) * IOI_track(n+1)) + TK2(n);
         
-        
         % motor variance increases proportionally after predicted (next) IOI < min(limits)
         if IOI_pred(n+1) < min(limits)
             
             M(n+1) =  M(n+1) + mvarProp * (min(limits) - IOI_pred(n+1));
-            
-        elseif  IOI_pred(n+1) > max(limits)
-            
-            M(n+1) =  M(n+1) + mvarProp * (IOI_pred(n+1) - max(limits));
+
         end
-        
-        
+
         
     else % n = 2 not enough stim to predict future
         gamma = 1; 
     end
    
     % joint -------------------------------------- 
-
     ASYN(n+1) = t(n+1) - t_pred(n+1);
     t_fin(n+1) = t(n+1) - ((1-gamma) * ASYN(n+1)) + M(n) - M(n-1);
 
