@@ -14,13 +14,8 @@ C = 0;                    % temporal contrast
 IOI = 600;                  % IOI of the stimulus
 dev_perc = .1;
 
-end_early = [repmat(IOI,1,7) (IOI-IOI*dev_perc) IOI*2 (IOI-IOI*dev_perc)]; 
-end_late = [repmat(IOI,1,7) (IOI+IOI*dev_perc) IOI*2 (IOI+IOI*dev_perc)];
-beg_early = [repmat(IOI,1,7) IOI*2-IOI*dev_perc (IOI+IOI*dev_perc)];
-beg_late = [repmat(IOI,1,7) IOI*2+IOI*dev_perc (IOI-IOI*dev_perc)];
-on_time = [repmat(IOI,1,7) IOI*2 IOI];
-
-stim_seq = beg_late;
+stim_seq = [repmat(IOI,1,7) 540 1200 486]; 
+on_time = repmat(IOI,1,11);
 
 C_all = [];
 
@@ -37,55 +32,28 @@ per(i+1) = (1 + Wp*C)*per(i);
 
 C_all(i) = C;
 
-%     fi  = ms2Hz(per(i));
-%     cycdur = 1/fi;
-%     cycT   = Ts:Ts:cycdur;
-%     wavez{i} = cos(2*pi*fi*cycT+pha(i));
-%     sig = [sig cos(2*pi*fi*cycT+pha(i))];  
-%     plot(sig)
-
 
     cycdur = per(i);
     fi = 1/cycdur;
     cycT   = Ts:Ts:cycdur;
     wavez{i} = cos(2*pi*fi*cycT+pha(i));
     sig = [sig wavez{i}];  
-    plot(sig)
-
 
 end
 
 
 disp(C);
-% Luce_condition = exp(gamma*C_condition)/sum(exp(gamma*C_all_conditions))
 
 
 
 
 
+figure;
+scatter(cumsum(stim_seq), ones(1,length(cumsum(stim_seq))), 'filled', 'k'); hold on;
+scatter(cumsum(on_time), ones(1,length(cumsum(on_time))), 'k');
 
 
-% 
-% figure;
-% subplot(2,1,1)
-% scatter(cumsum(stim_seq), ones(1,length(cumsum(stim_seq))), 'filled', 'k'); hold on;
-% scatter(cumsum(on_time), ones(1,length(cumsum(on_time))), 'k');
-% 
-% subplot(2,1,2)
-% plot(test)
-
-
-%%
-    fi  = ms2Hz(per(i));
-    cycdur = 1/fi;
-    cycT   = Ts:Ts:cycdur;
-
-% x = cos(2*pi*fi*cycT+pha(i));
-% plot(x)
-
-%% func
-
-function EK_dotplot(x)
-scatter(x, ones(1,length(x)),'LineWidth',1);
-set(gca,'LineWidth',0.75);
-end
+figure;
+scatter(cumsum(stim_seq).*1000, ones(1,length(cumsum(stim_seq))), 'filled', 'k'); hold on;
+plot(sig, 'LineWidth', 2)
+ylim ([-1.1 1.1])

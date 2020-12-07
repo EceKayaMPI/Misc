@@ -12,10 +12,6 @@ pha = 0;            % phase corr term
 per = 600;            % period corr term
 C = 0;                    % temporal contrast
 
-IOIlist = [540, 600, 660];
-
-appdx = struct();
-
 for ioi = 1:1
 %     IOI = IOIlist(ioi);
     IOI = 600;
