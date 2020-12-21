@@ -191,14 +191,7 @@ lincgrp_beg = tmp_beg{:,3};
 tmp_end = groupsummary(condits, {'st_end', 'cmp_len'},'sum', {'linc'} );
 lincgrp_end = tmp_end{:,3};
 
-
-for i = 1:3:height(tmp_beg)
-    
-    for k = 0:2
-       tmp_beg.luce(i+k) = sum(tmp_beg.sum_linc(i:i+2));
-       tmp_end.luce(i+k) = sum(tmp_end.sum_linc(i:i+2));
-    end
-end
+for i = 1:
 
 
 
@@ -253,31 +246,31 @@ end
 
 %% plot all models together 
 
-% legtext = cell(length(Wphi_Wp),1);
-% 
-% k = 1;
-% for i = 1:3:height(all_models)
-%     
-%     legtext{k} = sprintf('Phase corr = %.2f, Period corr = %.2f', all_models{i,1}, all_models{i,2});
-%     beggg(:,k) = all_models{i:i+2,3};
-%     enddd(:,k) = all_models{i:i+2,4};
-%     k = k+1;
-% end
-% 
-% figure;
-% set(gca, 'FontSize',16);
-% subplot(1,2,1)
-% bar(beggg);
-% xticklabels({'early','on-time','late'});
-% xtickangle(45);
-% set(gca, 'FontSize', 14);
-% title('beginning manipulation');
-% 
-% subplot(1,2,2)
-% bar(enddd);
-% xticklabels({'early','on-time','late'});
-% xtickangle(45); 
-% set(gca, 'FontSize', 14);
-% title('ending manipulation');
-% legend(legtext);
+legtext = cell(length(Wphi_Wp),1);
+
+k = 1;
+for i = 1:3:height(all_models)
+    
+    legtext{k} = sprintf('Phase corr = %.2f, Period corr = %.2f', all_models{i,1}, all_models{i,2});
+    beggg(:,k) = all_models{i:i+2,3};
+    enddd(:,k) = all_models{i:i+2,4};
+    k = k+1;
+end
+
+figure;
+set(gca, 'FontSize',16);
+subplot(1,2,1)
+bar(beggg);
+xticklabels({'early','on-time','late'});
+xtickangle(45);
+set(gca, 'FontSize', 14);
+title('beginning manipulation');
+
+subplot(1,2,2)
+bar(enddd);
+xticklabels({'early','on-time','late'});
+xtickangle(45); 
+set(gca, 'FontSize', 14);
+title('ending manipulation');
+legend(legtext);
 
