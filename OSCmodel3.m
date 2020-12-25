@@ -11,9 +11,9 @@ mdl = 1;
 
 % Wphi_Wp = [0 1 .5 0 1 .5 0 1 .5; 0 0 0 1 1 1 .5 .5 .5]';
 
-Wphi_Wp = [.5 .5 ; 0 1];
+Wphi_Wp = [.5 .5 ];
 
-for par = 1:length(Wphi_Wp)
+for par = 1:size(Wphi_Wp,1)
     
     Wphi = Wphi_Wp(par,1);
     Wp =  Wphi_Wp(par,2);
@@ -150,65 +150,35 @@ for par = 1:length(Wphi_Wp)
 
 %% linear trans
 
-cfin = condits{:,7};
+% convert to linear 
 
-for c = 1:27
-    if strcmp(condits.cmp_len{c}, 'comp shorter')
-        condits.linc(c) = 1 - (.5 - abs(condits.C_fin(c)));
-    elseif strcmp(condits.cmp_len{c}, 'comp same')
-        condits.linc(c) = 1 - abs(condits.C_fin(c));
-    elseif strcmp(condits.cmp_len{c}, 'comp longer')
-        condits.linc(c) = 1 - (.5 - abs(condits.C_fin(c)));
-    end
-end
-
-for c = 1:27
-
-end
-
-
-
+% tol = 0.0001;
 gamma = 4.5;
-
-% a = softmax(n) = exp(n)/sum(exp(n))
-
-
-
-% for i = 1:3:27
-% 
-%      denomsum = sum(exp(gamma*condits.linc(i:i+2)));
-%      for k = 1:3
-%      condits.luce(i+k-1) = (gamma*condits.linc(i+k-1))/denomsum;
-%      end
-% 
-% end
-
-
-
-tmp_beg = groupsummary(condits, {'cmp_beg', 'cmp_len'},'sum', {'linc'} );
-lincgrp_beg = tmp_beg{:,3};
-
-tmp_end = groupsummary(condits, {'st_end', 'cmp_len'},'sum', {'linc'} );
-lincgrp_end = tmp_end{:,3};
-
-
-for i = 1:3:height(tmp_beg)
+for c = 1:height(condits)
+     
+    condits.linShorter(c) = (1- abs(.5 + condits.C_fin(c)) )* gamma;
+    condits.linSame(c) = (1 - ( abs(condits.C_fin(c)) - abs(tol)) ) * gamma;
+    condits.linLonger(c) = (1 - abs(.5 - condits.C_fin(c)) ) * gamma;
     
-    for k = 0:2
-       tmp_beg.luce(i+k) = sum(tmp_beg.sum_linc(i:i+2));
-       tmp_end.luce(i+k) = sum(tmp_end.sum_linc(i:i+2));
-    end
+    lucebox = softmax([condits.linShorter(c) condits.linSame(c) condits.linLonger(c)]');
+    
+    condits.pShorter(c) = lucebox(1);
+    condits.pSame(c) = lucebox(2);
+    condits.pLonger(c) = lucebox(3);
+
+end
+
+for c = 1:height(condits)
+    col = mod(c-1,3);
+    condits.PC(c) = condits{c,12+col};
 end
 
 
+begtbl = groupsummary(condits, {'cmp_beg'},'mean', {'PC'} )
+endtbl = groupsummary(condits, {'st_end'},'mean', {'PC'} )
 
-% luce = table();
-% for i = 1:3
-%     luce.beginning(i) = lincgrp_beg(i)/sum(lincgrp_beg);
-%     luce.ending(i) = lincgrp_end(i)/sum(lincgrp_end);
-% end
-% all_models.luce_beg(mdl:mdl+2) = luce.beginning;
-% all_models.luce_end(mdl:mdl+2) = luce.ending;
+% all_models.luce_beg(mdl:mdl+2) = PC.beginning;
+% all_models.luce_end(mdl:mdl+2) = PC.ending;
 
 %% plot
 
@@ -230,8 +200,7 @@ tittex = sprintf('Phase corr = %.2f, Period corr = %.2f', Wphi, Wp);
 % 
 % 
 
-% beg_manipulation = groupsummary(condits, {'cmp_beg'},'mean', {'linc'} );
-% end_manipulation = groupsummary(condits, {'st_end'},'mean', {'linc'} );
+
 % 
 % figure;
 % set(gca, 'FontSize',16);
