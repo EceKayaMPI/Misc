@@ -156,9 +156,15 @@ for par = 1:size(Wphi_Wp,1)
 gamma = 4.5;
 for c = 1:height(condits)
      
-    condits.linShorter(c) = (1- abs(.5 + condits.C_fin(c)) )* gamma;
-    condits.linSame(c) = (1 - ( abs(condits.C_fin(c)) - abs(tol)) ) * gamma;
-    condits.linLonger(c) = (1 - abs(.5 - condits.C_fin(c)) ) * gamma;
+%     condits.linShorter(c) = (1- abs(.5 + condits.C_fin(c)) )* gamma;
+%     condits.linSame(c) = (1 - ( abs(condits.C_fin(c)) - abs(tol)) ) * gamma;
+%     condits.linLonger(c) = (1 - abs(.5 - condits.C_fin(c)) ) * gamma;
+    
+    
+    condits.linShorter(c) = (1- abs(-.25 + condits.C_fin(c))) * gamma;
+    condits.linSame(c) = (1- abs(condits.C_fin(c)) ) * gamma;
+    condits.linLonger(c) = (1- abs(.25 - abs(condits.C_fin(c))) ) * gamma;
+    
     
     lucebox = softmax([condits.linShorter(c) condits.linSame(c) condits.linLonger(c)]');
     
@@ -176,7 +182,7 @@ end
 
 begtbl = groupsummary(condits, {'cmp_beg'},'mean', {'PC'} )
 endtbl = groupsummary(condits, {'st_end'},'mean', {'PC'} )
-
+plot(endtbl{:,3})
 % all_models.luce_beg(mdl:mdl+2) = PC.beginning;
 % all_models.luce_end(mdl:mdl+2) = PC.ending;
 
