@@ -1,33 +1,22 @@
 clear, clc;
-% Histograms and scatter plots of parameter estimates in N = 1000
-% simulated experiments (t = 100 m = 25 a = .4 b = .3)
 
-all_params = zeros (1000,4);
-for experiment = 1:1000
-
-real_params = [25, 100, 0.4, 0.3];
 % m = params(1)         25
 % t = params(2);        100
-% alpha = params(3);    0.4    
+% alpha = params(3);    0.4
 % beta = params(4);     0.3
+real_params = [25, 100, 0.4, 0.3];
 
-% Simulate data with real params 
-% Compute real ACVF 
+% Simulate data with real params
+% Compute real ACVF
 all_ACVF = [];
 for exp = 1:100
-all_ACVF(exp,:) = calculate_ACVF(model(real_params,1)); % I_avg = model(params, nSeq)
+    all_ACVF(exp,:) = calculate_ACVF(model(real_params,1)); % I_avg = model(params, nSeq)
 end
 real_ACVF = mean(all_ACVF,1);
 
 % Define starting values and call parameter-estimation function
 start_params = [50,50,1,1];
 [final_params, final_discrepancy] = wrapper4fmin (start_params, real_ACVF);
-
-all_params(experiment,:) = final_params;
-end
-
-
-
 
 function [x, fval] = wrapper4fmin (start_params, real_ACVF)
 
@@ -42,43 +31,56 @@ function [x, fval] = wrapper4fmin (start_params, real_ACVF)
     end
 end
 
-function I_avg = model(params, nSeq)
+function A_avg = model(params, nExp)
 m = params(1);
 t = params(2);
 alpha = params(3);
 beta = params(4);
 
-all_seqs = [];
-for seq = 1:nSeq
 NI = 31;
-k = 4;
-M = gamrnd(k,sqrt(m/k),[NI 1]);
-T = gamrnd(k,sqrt(t/k),[NI-1 1]);
-metronome = mean(T);
 
+mDist = makedist('Gamma', 'a', k, 'b', sqrt(m/k));
+tDist = makedist('Gamma', 'a', k, 'b', sqrt(t/k));
+
+
+all_seqs = [];
+for exp = 1:nExp
+    
+
+
+    T = random(tDist, [N-1 1]);
+    M = random(mDist, [N 1]);
+    metronome = mean(T);
+    
     for n = 1:30
         if n == 1
-            A(n) = gamrnd(k,sqrt(m/k),[1 1]); % some motor delay
-            Tx(n) = T(n) -  alpha * A(n);
-            I(n) = Tx(n) + M(n+1) - M(n);
+            % First Asynchrony is Metronome Interval
+            A(n) = -metronome;
+            % First-Order Error Correction
+            Tx(n) = T(n) - alpha * A(n);
         else
+            % Asynchrony of Previous Interval
             A(n) = sum(I(1:n-1)) - metronome*(n-1);
-            Tx(n) = T(n)  - alpha * A(n) - beta * A(n-1);
-            I(n) = Tx(n) + M(n+1) - M(n);
+            % Second-Order Error Correction
+            Tx(n) = T(n) - alpha(a)*A(n) - beta(b)*A(n-1);
         end
+        % Intervals
+        I(n) = Tx(n) + M(n+1) - M(n);
+        
     end % n, taps
     I = I'; A = A';
-
-all_seqs(seq, :) = I;
+    
+    all_seqs(exp, :) = A;
+    
 end % experiment simulation
-I_avg = mean(all_seqs,1);
-end % sim function 
 
-function ACVF = calculate_ACVF(I)
+A_avg = mean(all_seqs,1);
+end % sim function
+
+function ACVF = calculate_ACVF(arr)
 ACVF = [];
 for lag = 0:3
-    covmat = cov(I(1:end-lag),I(1+lag:end));
+    covmat = cov(arr(1:end-lag),arr(1+lag:end));
     ACVF(lag+1) = covmat(1,2);
 end
 end
-

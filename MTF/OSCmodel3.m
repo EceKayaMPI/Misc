@@ -11,7 +11,8 @@ mdl = 1;
 
 % Wphi_Wp = [0 1 .5 0 1 .5 0 1 .5; 0 0 0 1 1 1 .5 .5 .5]';
 
-Wphi_Wp = [.5 .5 ];
+% Wphi_Wp = [.5 .5 ];
+Wphi_Wp = [1 0];
 
 for par = 1:size(Wphi_Wp,1)
     
@@ -154,19 +155,26 @@ for par = 1:size(Wphi_Wp,1)
 
 % tol = 0.0001;
 gamma = 4.5;
+
 for c = 1:height(condits)
-     
-%     condits.linShorter(c) = (1- abs(.5 + condits.C_fin(c)) )* gamma;
-%     condits.linSame(c) = (1 - ( abs(condits.C_fin(c)) - abs(tol)) ) * gamma;
-%     condits.linLonger(c) = (1 - abs(.5 - condits.C_fin(c)) ) * gamma;
+
+    [longer, shorter] = lindist (condits.C_fin(c));
+    
+    condits.linShorter(c) = (1 - shorter) * gamma;
+    condits.linLonger(c) = (1 - longer) * gamma;
+    condits.linSame(c) = (1 - abs(condits.C_fin(c))) * gamma;
+    
+%     condits.linShorter(c) = (1 - shorter) ;
+%     condits.linLonger(c) = (1 - longer) ;
+%     condits.linSame(c) = (1 - abs(condits.C_fin(c))) ;
     
     
-    condits.linShorter(c) = (1- abs(-.25 + condits.C_fin(c))) * gamma;
-    condits.linSame(c) = (1- abs(condits.C_fin(c)) ) * gamma;
-    condits.linLonger(c) = (1- abs(.25 - abs(condits.C_fin(c))) ) * gamma;
-    
-    
-    lucebox = softmax([condits.linShorter(c) condits.linSame(c) condits.linLonger(c)]');
+%     condits.linShorter(c) =  shorter;
+%     condits.linLonger(c) = longer;
+%     condits.linSame(c) = abs(condits.C_fin(c));
+
+
+    lucebox = softmax(rescale([condits.linShorter(c) condits.linSame(c) condits.linLonger(c)])');
     
     condits.pShorter(c) = lucebox(1);
     condits.pSame(c) = lucebox(2);
@@ -182,7 +190,7 @@ end
 
 begtbl = groupsummary(condits, {'cmp_beg'},'mean', {'PC'} )
 endtbl = groupsummary(condits, {'st_end'},'mean', {'PC'} )
-plot(endtbl{:,3})
+
 % all_models.luce_beg(mdl:mdl+2) = PC.beginning;
 % all_models.luce_end(mdl:mdl+2) = PC.ending;
 
@@ -256,3 +264,31 @@ end
 % title('ending manipulation');
 % legend(legtext);
 
+%% FUNCTIONS
+
+function [longer, shorter] = lindist(x)
+
+    if x > 0 
+        
+        if x >= .25   
+           longer = x - .25;
+           shorter = .25 + (.50 - x);
+           
+        elseif x < .25
+           longer = .25 - x;
+           shorter = .25 + x;
+        end
+        
+    else % x < 0
+        
+        if abs(x) >= .25
+            longer = .25 + (.50 + x);
+            shorter = abs(x) - .25;
+            
+        elseif abs(x) < .25
+            longer = abs(x) + .25;
+            shorter = .25 + x;
+        end
+    end
+
+end 

@@ -1,10 +1,15 @@
 clear, clc;
+% Histograms and scatter plots of parameter estimates in N = 1000
+% simulated experiments (t = 100 m = 25 a = .4 b = .3)
 
+all_params = zeros (1000,4);
+for experiment = 1:1000
+
+real_params = [25, 100, 0.4, 0.3];
 % m = params(1)         25
 % t = params(2);        100
 % alpha = params(3);    0.4    
 % beta = params(4);     0.3
-real_params = [25, 100, 0.4, 0.3];
 
 % Simulate data with real params 
 % Compute real ACVF 
@@ -17,6 +22,15 @@ real_ACVF = mean(all_ACVF,1);
 % Define starting values and call parameter-estimation function
 start_params = [50,50,1,1];
 [final_params, final_discrepancy] = wrapper4fmin (start_params, real_ACVF);
+% chose params
+% final_params ~ params << should be. 
+
+
+all_params(experiment,:) = final_params;
+end
+
+
+
 
 function [x, fval] = wrapper4fmin (start_params, real_ACVF)
 
@@ -25,20 +39,20 @@ function [x, fval] = wrapper4fmin (start_params, real_ACVF)
 
     function discrepancy = real_vs_estimated(params)
         % calculate ACVF of the model output with given params
-        predicted_ACVF = calculate_ACVF(model(params,1));
+        sim_ACVF = calculate_ACVF(model(params,1));
         % difference between the real ACVF vs. predicted ACVF
-        discrepancy = sum((predicted_ACVF - real_ACVF).^2);
+        discrepancy = sum((sim_ACVF - real_ACVF).^2);
     end
 end
 
-function A_avg = model(params, nSeq)
+function I_avg = model(params, nSeq)
 m = params(1);
 t = params(2);
 alpha = params(3);
 beta = params(4);
 
 all_seqs = [];
-for experiment = 1:nSeq
+for seq = 1:nSeq
 NI = 31;
 k = 4;
 M = gamrnd(k,sqrt(m/k),[NI 1]);
@@ -58,15 +72,16 @@ metronome = mean(T);
     end % n, taps
     I = I'; A = A';
 
-all_seqs(experiment, :) = A;
+all_seqs(seq, :) = I;
 end % experiment simulation
-A_avg = mean(all_seqs,1);
+I_avg = mean(all_seqs,1);
 end % sim function 
 
-function ACVF = calculate_ACVF(arr)
+function ACVF = calculate_ACVF(I)
 ACVF = [];
 for lag = 0:3
-    covmat = cov(arr(1:end-lag),arr(1+lag:end));
+    covmat = cov(I(1:end-lag),I(1+lag:end));
     ACVF(lag+1) = covmat(1,2);
 end
 end
+
