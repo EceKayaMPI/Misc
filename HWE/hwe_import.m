@@ -31,7 +31,7 @@ for subj = 1:length(maindir_contents)
         dfs.tNr(trial) = trial;
         dfs.stim1(trial) = stim1;
         dfs.stim2(trial) = stim2;
-        dfs.miti(trial) = mITI
+        dfs.miti(trial) = mITI;
         trial = trial +1;
     end
     dfs = sortrows(dfs,'stim1','ascend');
@@ -51,7 +51,7 @@ for i = 1:height(df)
     
     if checklist(i) == 0
         
-    s_val = df.stim1(i,1);
+    s_val = df.stim1(i,1);              %standard 
     pair_sc = double(df.mitis(i,:));
 
     idx_cs = df.stim2==s_val & df.stim1==df.stim2(i,1);
@@ -59,18 +59,31 @@ for i = 1:height(df)
 
     pair_cs = double(df.mitis(idx_cs,:));
 
-    subplot(5,2,k)
+    subplot(2,5,k)
     scatter(pair_sc, pair_cs, 100, 'filled'); hold on;
     xlim([300 900]); ylim([300 900]);
-    xline(s_val, '--', 'LineWidth', 2, 'Color', [0.9294 0.6941 0.1255]);
-    xline(c_val, ':', 'LineWidth', 2, 'Color', [0.9294 0.6941 0.1255]);
-    yline(c_val, '--', 'LineWidth', 2, 'Color', [0.9294 0.6941 0.1255]);
-    yline(s_val, ':', 'LineWidth', 2, 'Color', [0.9294 0.6941 0.1255]);
+    xline(s_val, '--', 'LineWidth', 3, 'Color', [0.4667    0.6745    0.1882]);
+    xline(c_val, ':', 'LineWidth', 3, 'Color', [0.4667    0.6745    0.1882]);
+    yline(c_val, '--', 'LineWidth', 3, 'Color', [0.4667    0.6745    0.1882]);
+    yline(s_val, ':', 'LineWidth', 3, 'Color', [0.4667    0.6745    0.1882]);
+    
+    geo_mean = geomean([s_val, c_val]);
+    arit_mean = mean([s_val, c_val]);
+    
+%     xline(arit_mean, '-', 'LineWidth', 2, 'Color', [0.9294    0.6941    0.1255]); %arit-mean
+%     yline(arit_mean, '-', 'LineWidth', 2, 'Color', [0.9294    0.6941    0.1255]); %arit-mean
+%     
+%     xline(geo_mean, '-', 'LineWidth', 2, 'Color', [0.8510    0.3255    0.0980]); %-geo_mean
+%     yline(geo_mean, '-', 'LineWidth', 2, 'Color', [0.8510    0.3255    0.0980]); % geo_mean  
     
     scatter(mean(pair_sc), mean(pair_cs), 200, 'filled', 'MarkerFaceAlpha',.5);
-    tittxt = ['mean result=' num2str(mean([mean(pair_sc),mean(pair_cs)])) 'ms'];
-    EK_plotlabels([num2str(s_val) 'ms & ' num2str(c_val) 'ms'], ...
-        [num2str(c_val) 'ms & ' num2str(s_val) 'ms'],tittxt,13);
+%     tittxt = ['mean result=' num2str(mean([mean(pair_sc),mean(pair_cs)])) 'ms'];
+%     EK_plotlabels([num2str(s_val) 'ms & ' num2str(c_val) 'ms'], ...
+%         [num2str(c_val) 'ms & ' num2str(s_val) 'ms'],tittxt,13);
+ 
+    tittxt = [num2str(s_val) 'ms & ' num2str(c_val) 'ms --> ' num2str(abs(c_val-s_val)) 'ms diff'];
+    EK_plotlabels('st-comp', 'comp-st', tittxt, 13);    
+
     k = k+1;
 
     checklist(idx_cs) = 1;
@@ -78,7 +91,8 @@ for i = 1:height(df)
 
     
 end
-legend('','stim. heard first', 'stim. heard second');
+legend('indiv. data','stim. heard first', 'stim. heard second');
+% legend('','stim. heard first', 'stim. heard second','','','ar. mean', 'geo. mean','particip. mean');
 
 %% 
 function data = importfile(filename, dataLines)
