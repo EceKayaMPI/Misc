@@ -36,17 +36,11 @@ end
 plot(testm)
 
 %% 
-clear; clc; close all;
 
 fs = 44100;  
 Ts = 1/fs;  
 sinwa = [];
 
-stim_ioi = 500;
-gap_int = 3;
-
-stim_seq = [repmat(stim_ioi,5,1)' stim_ioi*gap_int stim_ioi];
-% stim_seq = [repmat(500,5,1)' 1500 500];
 
 Wpha = .5;
 Wper =  .5;
@@ -54,20 +48,20 @@ Wper =  .5;
 % pha = 0;            % phase corr term
 % per = 500;          % period corr term
 % C = 0;              % temporal contrast
-pha = NaN(length(stim_seq),1)';
-pha(1) = 0;
+pha = 
 
-per = NaN(length(stim_seq),1)';
-per(1) = 500;
-
-
+stim_seq = [repmat(500,5,1)' 1500 500];
 
 chist = [];
 
 % model stim seq loop -------------------
-for i = 1:5%length(stim_seq)-1
+for i = 1:length(stim_seq)-1
 
-
+    C = mod((pha(i) + stim_seq(i)/per(i)),1);
+    
+    if mod(C,1) > .5
+        C = C - 1;
+    end
 
     pha(i+1) = (1 - Wpha)*C;
     per(i+1) = (1 + Wper*C)*per(i);
@@ -91,8 +85,7 @@ hold on;
 plot(per_seq_times, ones(length(per_seq_times),1)+.5 , '.r', 'MarkerSize', 30)
 
 xticks(stim_seq_times); grid on; 
-yticks([1 1.5]); yticklabels({'stim', 'model'});
 set(gca, 'YGrid', 'off', 'xlim', [-100 max(stim_seq_times)+100]);
-EK_plotlabels('timepoints', '', ['C_{final} = ' num2str(C)], 15);
-set(gcf,'Position',[1500 500 500 100])
+EK_plotlabels('stim timepoints', '', ['C_{final} = ' num2str(C)], 15);
+
 

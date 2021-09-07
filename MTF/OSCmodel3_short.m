@@ -88,7 +88,7 @@ apx = apx.';
 
 model_con = struct();
 
-for c = 1:height(condits)
+for c = 1:14%height(condits)
     
     stim_seq = [context_seq apx(c,:)];
     
