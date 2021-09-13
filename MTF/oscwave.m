@@ -65,9 +65,13 @@ per(1) = 500;
 chist = [];
 
 % model stim seq loop -------------------
-for i = 1:5%length(stim_seq)-1
+for i = 1:length(stim_seq)
 
-
+    C = mod((pha(i) + stim_seq(i)/per(i)),1);
+    
+    if C > .5
+        C = C - 1;
+    end
 
     pha(i+1) = (1 - Wpha)*C;
     per(i+1) = (1 + Wper*C)*per(i);
@@ -94,5 +98,5 @@ xticks(stim_seq_times); grid on;
 yticks([1 1.5]); yticklabels({'stim', 'model'});
 set(gca, 'YGrid', 'off', 'xlim', [-100 max(stim_seq_times)+100]);
 EK_plotlabels('timepoints', '', ['C_{final} = ' num2str(C)], 15);
-set(gcf,'Position',[1500 500 500 100])
+set(gcf,'Position',[1500 500 800 300])
 
