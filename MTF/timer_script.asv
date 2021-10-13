@@ -1,45 +1,135 @@
-% 
 close all; clear; clc;
 
-figure;
+kappa = .05;
+osc = table();
 
-for t = 1:.1:10
-    
-%     theta = mod(t, 2*pi)+pi;
-%     theta_fastosc = mod(1.3*t, 2*pi)+pi;
-    
-    theta = t;
-    theta_fastosc = 1.3*t;
+n = 5;      % number of osc
+phases = [];
+waves = [];
 
-    make_dots(theta); hold on;
-    make_dots(theta_fastosc); hold off;
-    drawnow
+for i = 1:n
+    phases(1,i) = 2*pi*rand(1);
 end
 
 
+figure;
+subplot(2,1,1)
+k = 1;
+for t = 1:.1:10 % time 
+    
+    for i = 1:n
+        if k == 1
+            pha = phases(k,i);
+
+        else
+            
+            sum_pha_diff = 0;
+            for j = [1:i-1 i+1:n]
+                sum_pha_diff = sum_pha_diff + ...
+                    sin(phases(k-1,j)
+            end
+            pha = phases(k-1,i) + kappa * sum_pha_diff;
+%                 sin(osc.pha_2(k-1) - osc.pha_1(k-1));
+                    
+        end
+
+    
+    
+    end
+%     osc.pha_1(k) = pha_1;
+%     osc.pha_2(k) = pha_2;    
+%     
+%     osc.wave_1(k) = sin(t + pha_1);
+%     osc.wave_2(k) = sin(t + pha_2);   
+    
+    make_dots(t + pha_1); hold on;
+    drawnow
+        
+    k = k+1;
+end
+
+subplot(2,1,2)
+plot(osc.t, osc.wave_1); hold on;
+plot(osc.t, osc.wave_2); 
+
+
+
+%% 
+close all; clear; clc;
+
+kappa = .01;
+osc = table();
+
+figure;
+subplot(2,2,1)
+k = 1;
+for t = 1:.5:50 % sampling rate  
+    
+    osc.t(k) = t;
+    
+    if k == 1
+        pha_1 = 0;
+        pha_2 = 1;
+
+    else
+        pha_1 = osc.pha_1(k-1) + kappa * sin(osc.pha_2(k-1) - osc.pha_1(k-1));
+        pha_2 = osc.pha_2(k-1) + kappa * sin(osc.pha_1(k-1) - osc.pha_2(k-1));
+        
+    end
+
+    osc.pha_1(k) = pha_1;
+    osc.pha_2(k) = pha_2;    
+    
+    osc.wave_1(k) = sin(t + pha_1);
+    osc.wave_2(k) = sin(t + pha_2);   
+    
+    make_dots(pha_1); hold on;
+    make_dots(pha_2); hold off;
+    drawnow
+        
+    k = k+1;
+end
+
+subplot(2,2,2)
+plot(osc.t, osc.wave_1); hold on;
+plot(osc.t, osc.wave_2); 
 
 
 %%
-% close all; clear; clc;
-% 
-% timestep = .5;  % step that timer func evaluates (sampling rate)
-% timeInc = .1;   % increments in samples at every function call 
-% 
-% figure;
-% 
-% for t = 1:.1:10
-%     
-% %     theta = mod(t, 2*pi)+pi;
-% %     theta_fastosc = mod(1.3*t, 2*pi)+pi;
-%     
-%     theta = t;
-%     theta_fastosc = 1.3*t;
-% 
-%     make_dots(theta); hold on;
-%     make_dots(theta_fastosc); hold off;
-%     drawnow
-% end
-            
+close all; clear; clc;
+
+kappa = .5;
+osc = table();
+
+figure;
+subplot(2,2,1)
+k = 1;
+for t = 1:.1:10 % sampling rate  
+    
+    pha_1 = t;
+    pha_2 = t+1;
+    
+    osc.t(k) = t;
+    osc.theta_1(k) = pha_1;
+    osc.theta_2(k) = pha_2;
+
+    
+
+
+    make_dots(pha_1); hold on;
+    make_dots(pha_2); hold off;
+    drawnow
+        
+    k = k+1;
+end
+
+subplot(2,2,2)
+plot(osc.t, sin(osc.theta_1)); hold on;
+plot(osc.t, sin(osc.theta_2)); 
+
+
+
+
 %% functions
 
 % function kuramoto(thetaVec, k, 
