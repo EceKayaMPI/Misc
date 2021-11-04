@@ -28,7 +28,7 @@ freq_mdl = 5; % fs/samples << initial freq
 freq = freq_mdl;
 mdl_ioi = fs/freq_mdl;
 
-W = .6;
+W = .9;
 % WP = .5;
 
 tbl = table();
@@ -106,21 +106,8 @@ hold on;
 EK_xAxisMarker(find(stim>0), [0 0 1]);
 plot(thetak, 'linewidth', 2, 'color', 'g');
 yline(0, '--k')
-EK_plotlabels('time', 'model phase', '',18);
+EK_plotlabels('time', 'model \theta', '',18);
 
 
 
 %% func
-
-% function [phaneeded] = phase_finder (f2, pha2match, currpha, t)
-% 
-% 
-% 
-% radpha = t*2*pi*f2+currpha;
-% 
-% radphadif = pha2match-radpha;
-% 
-% 
-% phaneeded = phaneeded/360;
-% 
-% end

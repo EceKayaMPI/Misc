@@ -227,3 +227,100 @@ EK_plotlabels('IOI', 'bias movmean (ws=30)', 'all resp ', 16);
     C_fin = C;
     
     end
+    
+    
+    function C_fin = McAuley_main (stim_seq, pha_init, per_init, Wpha, Wper)
+    pha = NaN(length(stim_seq)+1,1)'; pha(1) = pha_init;
+    per = NaN(length(stim_seq)+1,1)'; per(1) = per_init;
+    
+    chist = NaN(length(stim_seq)+1,1)';
+    
+    for i = 1:length(stim_seq)
+
+        if nrep < 2 % normal model -- stim corresponds model
+            
+            C = mod(mod(pha(m),1) + mod(stim_vs_per,1),1);
+            
+            if C > .5
+                C = C - 1;
+            end
+            
+            % normal model equations
+            pha(m+1) = (1 - Wpha)*C;
+            per(m+1) = (1 + Wper*C)*per(m);
+            chist(m) = C;
+            corr_ok = 1;
+            
+            
+            %         M.stim_index(m) = s;
+            %         M.model_index(m) = m;
+            %         M.stim_IOI(m) = stim_seq(s);
+            %         M.stim_IOI_parts(m) = NaN;
+            %         M.model_phase(m) = pha(m);
+            %         M.model_period(m) = per(m);
+            %         M.C(m) = C;
+            %         M.was_corrected(m+1) = corr_ok;
+            
+            
+            
+            m = m+1;    % next model index
+            
+        else % if stim interval multiplies model interval (per(i))
+            
+            stim_int_parts = [repmat(per(m),1,nrep),  stim_seq(s)-per(m)*(nrep)];
+            if stim_int_parts(end) == 0
+                maxj = nrep;
+            else
+                maxj = nrep+1;
+            end
+            for j = 1:maxj % remainder from floor() func
+                
+                % chop long stim interval to exact multiples (and remainder)
+                C = mod(mod(pha(m),1) + mod(stim_int_parts(j)/per(m),1),1);
+                
+                if C > .5
+                    C = C - 1;
+                end
+                
+                if j < maxj
+                    % model doesn't correct for phase & period here (Wper = 0, Wpha =
+                    % 0)
+                    pha(m+1) = (1 - 0)*C;
+                    per(m+1) = (1 + 0 *C)*per(m);
+                    chist(m) = C;
+                    corr_ok = 0;
+                else
+                    % normal model equations to predict final interval (bcs
+                    % there will be stim next )
+                    pha(m+1) = (1 - Wpha)*C;
+                    per(m+1) = (1 + Wper*C)*per(m);
+                    chist(m) = C;
+                    corr_ok = 1;
+                    
+                end
+                
+                
+                %             M.stim_index(m) = s;
+                %             M.model_index(m) = m;
+                %             if j == 1
+                %                 M.stim_IOI(m) = stim_seq(s);
+                %             else
+                %                 M.stim_IOI(m) = NaN;
+                %             end
+                %             M.stim_IOI_parts(m) = stim_int_parts(j);
+                %             M.model_phase(m) = pha(m);
+                %             M.model_period(m) = per(m);
+                %             M.C(m) = C;
+                %             M.was_corrected(m+1) = corr_ok;
+                
+                m = m+1;
+            end
+            
+        end
+        
+        s = s+1;
+    end
+    
+    C_fin = C;
+    
+    end
