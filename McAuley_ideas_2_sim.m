@@ -41,7 +41,7 @@ Wper = 0.6;
 
 perlist = [];
 perlist(1) = per_init;
-Winflex = .1;
+Winflex = .9;
 
 for i = 1:height(condits)
     

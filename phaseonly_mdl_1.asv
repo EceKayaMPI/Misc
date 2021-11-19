@@ -1,0 +1,38 @@
+
+clear all;clc;
+close all;
+
+fs = 1000;
+Ts = 1/fs;
+
+% ======= make stim =======
+stim = zeros(200,1)';
+ioilist = [100, 100, 100, 100, 100*6];% [200, 200, 300, 600, 250];
+
+for i = 1:length(ioilist)
+    x = zeros(ioilist(i),1)';
+    x(1) = 2;
+    stim = [stim x];
+end
+
+% ======= init params =======
+theta = 0;
+mdl_freq = 4; % fs/samples << initial freq
+
+k = 1;
+t = Ts;
+
+wave = [];
+angles = [];
+
+while 1
+    
+    
+    if stim(k) > 0  % if you see a stimulus (sound)  
+        
+        
+        
+    end
+    
+    
+end

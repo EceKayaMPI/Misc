@@ -28,7 +28,7 @@ set(fig,'Position', [1001 965 1085 374]);
 
 % W = .9;
 % WP = 1;
-weightlist = [0 .6 1];
+weightlist = [.3 .6 1];
 
 for i = 1:3
 % ======= init params =======
@@ -37,7 +37,7 @@ mdl_freq = 6; % fs/samples << initial freq
 freq = mdl_freq;
 mdl_ioi = fs/mdl_freq; 
 
-    W = 0;
+    W = .7;
     WP = weightlist(i);
     
     ons = 1;
@@ -48,7 +48,7 @@ mdl_ioi = fs/mdl_freq;
     freqk = [];
     thetak = [];
     stimsamp = [];
-    
+    phasek = [];
     while 1
         
         if stim(k) > 0  % if you see a stimulus (sound)
@@ -70,11 +70,11 @@ mdl_ioi = fs/mdl_freq;
                 
                 % -------------- set required theta to match phase to prev --------------
                 set_theta = mod(prev_theta - t*2*pi*(freqnew - freq),2*pi);
-                reset_theta = mod(2*pi*(1 - t*freqnew), 0);
+%                 reset_theta = mod(2*pi*(1 - t*freqnew), 0);
+%                 set_theta = mod((phasek(k-1) - t*2*pi*freq), 2*pi);
                 
                 % -------------- update wave theta  (WP) --------------
-                thetanew = (set_theta + (reset_theta - set_theta) * WP); % weighted theta correction
-%                 thetanew = circ_mean([set_theta reset_theta], [WP (1-WP)]);
+                thetanew = set_theta; % weighted theta correction
 
                 % -------------- assign updated values
                 freq = freqnew;
@@ -92,7 +92,8 @@ mdl_ioi = fs/mdl_freq;
         thetak(k) = theta;
         freqk(k) = freq;
         % make 2 poss wave PHASEs >> circmean that
-        wave(k) = cos(mod(t*(2*pi*freq),2*pi)+theta);%cos(t*(2*pi*freq)+theta);
+        wave(k) = cos(t*(2*pi*freq)+theta);
+        phasek(k) = t*(2*pi*freq)+theta;
         
         % increase time
         t = t+Ts;

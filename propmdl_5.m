@@ -1,0 +1,127 @@
+%% NO phase reset, but entr decay (W decays)
+
+clear all;clc;
+close all;
+
+fs = 1000;
+Ts = 1/fs;
+
+% ======= make stim =======
+stim = zeros(200,1)';
+ioilist = [100, 100, 100, 100, 100*6];% [200, 200, 300, 600, 250];
+
+for i = 1:length(ioilist)
+    x = zeros(ioilist(i),1)';
+    x(1) = 2;
+    stim = [stim x];
+end
+
+
+% ======= init params =======
+theta = 0;
+mdl_freq = 4; % fs/samples << initial freq
+freq = mdl_freq;
+mdl_ioi = fs/mdl_freq;
+
+W = 0;
+W_init = 1;
+% WP = 0;
+% WP_init = 1;
+
+tbl = table();
+ons = 1;
+k = 1;
+t = Ts;
+
+wave = [];
+freqk = [];
+thetak = []; 
+phasek = [];
+W_time = [];
+W_decaycons = .01;
+onslistk = [];
+
+while 1
+    
+ 
+    if stim(k) > 0  % if you see a stimulus (sound)    
+        if ons > 1 % do stuff only after second onset
+            ioi = k - onslistk(ons-1);      % get stim IOI
+            W = W_init;                     % maximize entrainment weight
+        end 
+        onslistk(ons) = k;                  % there was an onset at this sample
+        ons = ons+1;                        % increase number of seen onsets
+        
+        % phase reset ??
+        
+    end    
+
+    if W > 0
+        % -------------- update wave frequency  --------------
+        freqnew = fs/(mdl_ioi + (ioi - mdl_ioi) * W); % avg ioi
+        % -------------- set required theta to match phase to prev --------------
+        set_theta = thetak(k-1) - t*2*pi*(freqnew - freq);
+%         set_theta = phasek(k-1) - t*2*pi*(freqnew)  %% <<<
+%         !!!!!!!!!!!!!!!!! doesn't work
+
+       
+        theta = set_theta;  
+        % -------------- assign updated values
+        freq = freqnew;
+
+
+        % -------------- entr decay --------------
+        W = W - W * W_decaycons;
+    end
+    
+     
+    
+    % -------------- save timepoint info --------------
+    W_time(k) = W;
+    thetak(k) = theta;
+    freqk(k) = freq;
+    wave(k) = cos(t*(2*pi*freq)+theta);
+    phasek(k) = t*(2*pi*freq)+theta;
+    
+    % -------------- plot wave generated up to now --------------
+%     plot(wave, 'linewidth', 1.2, 'color', 'm');
+    
+    % increase time
+    t = t+Ts;
+    if k == length(stim)
+        break
+    end
+    k = k+1;
+end
+
+fig = figure;
+set(fig,'Position', [ 1501         100        1185         774]);
+sgtitle({['Model freq = ' num2str(mdl_freq)],...
+          ['W exponential decay (W = W - W * ' num2str(W_decaycons) ')']  }, 'fontsize', 18);
+
+
+subplot(4,1,1) % stim 
+hold on;
+EK_xAxisMarker(find(stim>0), [0 0 1]);
+plot(wave, 'linewidth', 2, 'color', 'm');
+EK_plotlabels('time', 'cos()', 'wave',18);
+
+subplot(4,1,2)  % freqs 
+hold on;
+EK_xAxisMarker(find(stim>0), [0 0 1]);
+plot(freqk, 'linewidth', 2, 'color', 'g');
+EK_plotlabels('time', 'frequency', 'model frequency',18);
+
+subplot(4,1,3)  % phase 
+hold on;
+EK_xAxisMarker(find(stim>0), [0 0 1]);
+plot(phasek, 'linewidth', 2, 'color', 'g');
+EK_plotlabels('time', 'frequency', 'model phase (mod 2pi)',18);
+
+
+subplot(4,1,4) % W 
+hold on;
+EK_xAxisMarker(find(stim>0), [0 0 1]);
+plot(W_time, 'linewidth', 2, 'color', 'g');
+yline(0, '--k')
+EK_plotlabels('time', 'W', 'freq correction weight',18);
